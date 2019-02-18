@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 get_ipython().magic(u'matplotlib inline')
 
 
-# In[11]:
+
 
 
 #Download data from the below link
@@ -25,13 +25,6 @@ train  = pd.read_csv('/media/samba_share/train_tweets.csv')
 test = pd.read_csv('/media/samba_share/test_tweets.csv')
 
 
-# In[ ]:
-
-
-
-
-
-# In[14]:
 
 
 #Data Inspection
@@ -39,20 +32,20 @@ print train.shape,test.shape #Check dimentionaons of train and test set
 train[train['label'] == 0].head(10) # Shows us first 10 non racist/sexist tweets
 
 
-# In[13]:
+
 
 
 train[train['label'] == 1].head(10) # Shows us first 10 racist/sexist tweets
 
 
-# In[15]:
+
 
 
 #Check the number of racist and non racist tweets
 train["label"].value_counts()
 
 
-# In[16]:
+
 
 
 length_train = train['tweet'].str.len()
@@ -64,14 +57,14 @@ plt.legend()
 plt.show()
 
 
-# In[17]:
+
 
 
 combi = train.append(test, ignore_index=True)
 combi.shape
 
 
-# In[18]:
+
 
 
 def remove_pattern(input_txt, pattern):
@@ -82,33 +75,33 @@ def remove_pattern(input_txt, pattern):
     return input_txt   
 
 
-# In[19]:
+
 
 
 combi['tidy_tweet'] = np.vectorize(remove_pattern)(combi['tweet'], "@[\w]*") 
 combi.head()
 
 
-# In[20]:
+
 
 
 combi['tidy_tweet'] = combi['tidy_tweet'].str.replace("[^a-zA-Z#]", " ")
 combi.head(10)
 
 
-# In[22]:
+
 
 
 combi['tidy_tweet'] = combi['tidy_tweet'].apply(lambda x: ' '.join([w for w in x.split() if len(w)>3]))
 
 
-# In[23]:
+
 
 
 combi.head()
 
 
-# In[24]:
+
 
 
 tokenized_tweet = combi['tidy_tweet'].apply(lambda x: x.split()) # tokenizing
@@ -116,7 +109,7 @@ tokenized_tweet = combi['tidy_tweet'].apply(lambda x: x.split()) # tokenizing
 tokenized_tweet.head()
 
 
-# In[25]:
+
 
 
 from nltk.stem.porter import *
@@ -125,7 +118,7 @@ stemmer = PorterStemmer()
 tokenized_tweet = tokenized_tweet.apply(lambda x: [stemmer.stem(i) for i in x]) # stemming
 
 
-# In[26]:
+
 
 
 for i in range(len(tokenized_tweet)):
@@ -134,7 +127,7 @@ for i in range(len(tokenized_tweet)):
 combi['tidy_tweet'] = tokenized_tweet
 
 
-# In[41]:
+
 
 
 all_words = ' '.join([text for text in combi['tidy_tweet']])
@@ -147,13 +140,13 @@ plt.axis('off')
 plt.show()
 
 
-# In[40]:
+
 
 
 get_ipython().system(u'pip install WordCloud')
 
 
-# In[42]:
+
 
 
 # function to collect hashtags
@@ -167,7 +160,7 @@ def hashtag_extract(x):
     return hashtags
 
 
-# In[43]:
+
 
 
 # extracting hashtags from non racist/sexist tweets
@@ -182,7 +175,7 @@ HT_regular = sum(HT_regular,[])
 HT_negative = sum(HT_negative,[])
 
 
-# In[44]:
+
 
 
 a = nltk.FreqDist(HT_regular)
@@ -197,7 +190,7 @@ ax.set(ylabel = 'Count')
 plt.show()
 
 
-# In[45]:
+
 
 
 b = nltk.FreqDist(HT_negative)
@@ -209,20 +202,20 @@ plt.figure(figsize=(16,5))
 ax = sns.barplot(data=e, x= "Hashtag", y = "Count")
 
 
-# In[46]:
+
 
 
 get_ipython().system(u'pip install gensim')
 
 
-# In[47]:
+
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import gensim
 
 
-# In[48]:
+
 
 
 bow_vectorizer = CountVectorizer(max_df=0.90, min_df=2, max_features=1000, stop_words='english')
@@ -230,7 +223,7 @@ bow = bow_vectorizer.fit_transform(combi['tidy_tweet'])
 bow.shape
 
 
-# In[49]:
+
 
 
 tfidf_vectorizer = TfidfVectorizer(max_df=0.90, min_df=2, max_features=1000, stop_words='english')
@@ -238,7 +231,7 @@ tfidf = tfidf_vectorizer.fit_transform(combi['tidy_tweet'])
 tfidf.shape
 
 
-# In[50]:
+
 
 
 tokenized_tweet = combi['tidy_tweet'].apply(lambda x: x.split()) # tokenizing
@@ -257,7 +250,7 @@ model_w2v = gensim.models.Word2Vec(
 model_w2v.train(tokenized_tweet, total_examples= len(combi['tidy_tweet']), epochs=20)
 
 
-# In[51]:
+
 
 
 model_w2v.wv.most_similar(positive="dinner")
